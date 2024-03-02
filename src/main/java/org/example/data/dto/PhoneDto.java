@@ -2,7 +2,7 @@ package org.example.data.dto;
 import lombok.Data;
 
 @Data
-public class PhoneCreationDto {
+public class PhoneDto {
     private String number;
 
 }

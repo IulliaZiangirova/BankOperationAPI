@@ -11,14 +11,16 @@ import org.hibernate.annotations.NaturalId;
 @NoArgsConstructor
 public class PhoneNumber {
     @Id
-    @Column(name = "email_id")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "number_id")
     private String phoneId;
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
     private String number;
 
-    public PhoneNumber(String number) {
+    public PhoneNumber(User user, String number) {
+        this.user = user;
         this.number = number;
     }
 }

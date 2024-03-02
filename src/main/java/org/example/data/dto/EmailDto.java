@@ -3,6 +3,6 @@ package org.example.data.dto;
 import lombok.Data;
 
 @Data
-public class EmailCreationDto {
+public class EmailDto {
     private String email;
 }

@@ -1,2 +1,9 @@
-package org.example.data.dto;public class PhoneUpdateDto {
+package org.example.data.dto;
+
+import lombok.Data;
+
+@Data
+public class PhoneUpdateDto {
+    private String oldNumber;
+    private String newNumber;
 }
