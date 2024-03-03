@@ -25,7 +25,6 @@ public class JwtProvider {
 
     ) {
         this.jwtAccessSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtAccessSecret));
-
     }
 
     public String generateAccessToken(User user) {
@@ -39,11 +38,6 @@ public class JwtProvider {
                 .claim("login", user.getLogin())
                 .compact();
     }
-
-    public boolean validateAccessToken(String accessToken) {
-        return validateToken(accessToken, jwtAccessSecret);
-    }
-
 
 
     private boolean validateToken(String token, Key secret) {
@@ -66,11 +60,6 @@ public class JwtProvider {
         }
         return false;
     }
-
-    public Claims getAccessClaims(String token) {
-        return getClaims(token, jwtAccessSecret);
-    }
-
 
 
     private Claims getClaims(String token, Key secret) {

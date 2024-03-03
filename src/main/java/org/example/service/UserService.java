@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.data.entity.Email;
 import org.example.data.entity.PhoneNumber;
 import org.example.data.entity.User;
@@ -12,8 +13,12 @@ import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -22,7 +27,7 @@ public class UserService {
 
     @Transactional
     public void save(User user){
-        if (userRepository.findByLogin(user.getLogin()) != null){
+        if (userRepository.findByLogin(user.getLogin()).isPresent()){
             throw new NotAllowException("Login already exists");
         }
         if (user.getBankAccount().getAmount() <= 0){
@@ -35,6 +40,7 @@ public class UserService {
             throw new NotAllowException("Phone is not unique");
         }
         userRepository.save(user);
+        log.info(user.getLogin() + " saved");
     }
 
     @Transactional
@@ -44,6 +50,7 @@ public class UserService {
             throw new NotAllowException("Phone is not unique");
         }
         phoneRepository.save(phoneNumber);
+        log.info(user.getLogin() + " saved new number " + phoneNumber.getNumber());
     }
 
     @Transactional
@@ -53,6 +60,7 @@ public class UserService {
             throw new NotAllowException("Email is not unique");
         }
         emailRepository.save(email);
+        log.info(user.getLogin() + " saved new email " + email.getEmail());
     }
 
     @Transactional
@@ -62,6 +70,7 @@ public class UserService {
             throw new NotAllowException("You can't delete this email");
         }
         emailRepository.delete(email);
+        log.info(user.getLogin() + " deleted email " + email.getEmail());
     }
 
     @Transactional
@@ -71,6 +80,7 @@ public class UserService {
             throw new NotAllowException("You can't delete this number");
         }
         phoneRepository.delete(phoneNumber);
+        log.info(user.getLogin() + " deleted phone Number " + phoneNumber.getNumber());
     }
 
     @Transactional
@@ -79,6 +89,7 @@ public class UserService {
             throw new NotAllowException("Email is not unique");
         }
         emailRepository.save(email);
+        log.info(email.getUser().getLogin() + " updated his email " + email.getEmail());
     }
 
     @Transactional
@@ -87,7 +98,39 @@ public class UserService {
             throw new NotAllowException("Phone is not unique");
         }
         phoneRepository.save(phoneNumber);
+        log.info(phoneNumber.getUser().getLogin() + " updated his phone number " + phoneNumber.getNumber());
     }
+
+
+    public User findByLogin(String login){
+        return userRepository.findByLogin(login).orElseThrow(()-> new NotFoundException("User is not found"));
+    }
+
+    public User findByNumber(String number){
+        PhoneNumber phoneNumber = phoneRepository.findByNumber(number).orElseThrow(()-> new NotFoundException("number is not found"));
+        return phoneNumber.getUser();
+
+    }
+
+    public User findByEmail(String email){
+        Email email1 = emailRepository.findByEmail(email).orElseThrow(()-> new NotFoundException("Email is not found"));
+        return email1.getUser();
+    }
+
+    public List<User> findByLoginLike(String string){
+        return userRepository.findByLoginLike(string).orElseThrow(()-> new NotFoundException("User is not found"));
+    }
+
+
+    public List<User> findByBirthdate (String birthdate){
+        LocalDate date = LocalDate.parse(birthdate);
+        return userRepository.findAllByBirthDateGreaterThan(date).orElseThrow(()-> new NotFoundException("User is not found"));
+    }
+
+
+
+
+
 
 
 

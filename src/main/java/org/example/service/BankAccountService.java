@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.data.entity.BankAccount;
 import org.example.repository.BankAccountRepository;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BankAccountService {
     private final BankAccountRepository bankAccountRepository;
     private Map<String, Double> startAmount;
@@ -24,6 +26,9 @@ public class BankAccountService {
 
     private List<BankAccount> getAllBankAccount(){
         return bankAccountRepository.findAll();
+    }
+    public BankAccount getByUserId (String id){
+       return bankAccountRepository.findByUserId(id);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -47,14 +52,16 @@ public class BankAccountService {
         }
 
         private void increaseAmount (){
+            log.info("Increasing start");
             double scale = Math.pow(10,2);
             for (BankAccount account : accounts) {
                 double newAmount = account.getAmount() * 1.05;
                 newAmount = Math.ceil(newAmount * scale)/ scale;
                 if(newAmount <= startAmount.get(account.getAccountId()) * 2.07){
                     account.setAmount(newAmount);
+                    log.info(account.getAccountId() + " success increasing");
                     save(account);
-                }
+                }else log.info(account.getAccountId() + " reach 207%");
             }
         }
     }
